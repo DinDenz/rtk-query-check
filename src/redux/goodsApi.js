@@ -2,18 +2,32 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const goodsApi = createApi({
   reducerPath: "goodsApi",
+  tagTypes: ["Products"], // конкретизируем с какими сущностями работаем в рамках этого апи
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3001/" }),
   endpoints: (build) => ({
     getGoods: build.query({
       //query: () => `/goods`
-      query: (limit = "") => `/goods?${limit && `_limit=${limit}`}`
+      query: (limit = "") => `/goods?${limit && `_limit=${limit}`}`,
+      //providesTags тут лучше в документацию и видос Михаила Непомнящего, нужно для автообновления страницы после обновления базы данных 
+      providesTags: (
+        result,
+        error,
+        arg 
+      ) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Products", id })),
+              { type: "Products", id: "LIST" }
+            ]
+          : [{ type: "Products", id: "LIST" }]
     }),
     addProduct: build.mutation({
-        query: (body) => ({
-            url: 'goods',
-            method: 'POST',
-            body,
-        })
+      query: (body) => ({
+        url: "goods",
+        method: "POST",
+        body
+      }),
+      invalidatesTags:  [{ type: "Products", id: "LIST" }]
     })
   })
 });
