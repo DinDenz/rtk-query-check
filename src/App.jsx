@@ -1,14 +1,33 @@
 import "./App.css";
-import { useGetGoodsQuery } from "./redux";
+import { useGetGoodsQuery, useAddProductMutation } from "./redux";
 import { useState } from "react";
 
 function App() {
   const [count, setCount] = useState("");
+  const [newProduct, setNewProduct] = useState("");
   const { data = [], isLoading } = useGetGoodsQuery(count); //isLoading идет из-под коробки
+  const [addProduct, { isError }] = useAddProductMutation(); // объект с параметрами для демонстрации, тут не используем,
+  //возвращает массив -- в хуке выше происходит выполнение функции, а тут в useAddProductMutation мы принимаем функцию, а выполнять будем по необходимости
+
+  const handleAddProduct = async () => {
+    if (newProduct) {
+      await addProduct({ name: newProduct }).unwrap(); //unwrap - обязательно. для корректной работы других пропов из хука
+      setNewProduct("");
+    }
+  };
+
   if (isLoading) return <h1>Loading...</h1>;
 
   return (
     <div className="App">
+      <div>
+        <input
+          type="text"
+          value={newProduct}
+          onChange={(e) => setNewProduct(e.target.value)}
+        />
+        <button onClick={handleAddProduct}>add product</button>
+      </div>
       <div>
         <select value={count} onChange={(e) => setCount(e.target.value)}>
           <option value="">all</option>

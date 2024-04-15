@@ -7,11 +7,18 @@ export const goodsApi = createApi({
     getGoods: build.query({
       //query: () => `/goods`
       query: (limit = "") => `/goods?${limit && `_limit=${limit}`}`
+    }),
+    addProduct: build.mutation({
+        query: (body) => ({
+            url: 'goods',
+            method: 'POST',
+            body,
+        })
     })
   })
 });
 
-export const { useGetGoodsQuery } = goodsApi;
+export const { useGetGoodsQuery, useAddProductMutation } = goodsApi;
 
 //здесь создается хук useGetGoodsQuery
 /*он состоит из use + getGoods + Query,
@@ -21,3 +28,5 @@ export const { useGetGoodsQuery } = goodsApi;
 //благодаря этой библиотеке нам не нужно писать fetch своими руками и тем более юзать axios и тд
 
 //limit добавил для лимитирования количества запрашиваемых товаров, в него прилетает count из app
+
+//useAddProductMutation по той же логике создается хук для мутации
