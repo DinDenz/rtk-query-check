@@ -7,7 +7,10 @@ export const goodsApi = createApi({
   endpoints: (build) => ({
     getGoods: build.query({
       //query: () => `/goods`
-      query: (limit = "") => `/goods?${limit && `_limit=${limit}`}`,
+      query: (limit = "") => {
+        if (limit === "") return "goods"; //если выбираю all - запрос за всеми товарами
+        return `/goods?${limit && `_limit=${limit}`}`;
+      },
       //providesTags тут лучше в документацию и видос Михаила Непомнящего, нужно для автообновления страницы после обновления базы данных
       providesTags: (result, error, arg) =>
         result
@@ -35,7 +38,11 @@ export const goodsApi = createApi({
   })
 });
 
-export const { useGetGoodsQuery, useAddProductMutation, useDeleteProductMutation } = goodsApi;
+export const {
+  useGetGoodsQuery,
+  useAddProductMutation,
+  useDeleteProductMutation
+} = goodsApi;
 
 //здесь создается хук useGetGoodsQuery
 /*он состоит из use + getGoods + Query,
