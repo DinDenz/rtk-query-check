@@ -8,12 +8,8 @@ export const goodsApi = createApi({
     getGoods: build.query({
       //query: () => `/goods`
       query: (limit = "") => `/goods?${limit && `_limit=${limit}`}`,
-      //providesTags тут лучше в документацию и видос Михаила Непомнящего, нужно для автообновления страницы после обновления базы данных 
-      providesTags: (
-        result,
-        error,
-        arg 
-      ) =>
+      //providesTags тут лучше в документацию и видос Михаила Непомнящего, нужно для автообновления страницы после обновления базы данных
+      providesTags: (result, error, arg) =>
         result
           ? [
               ...result.map(({ id }) => ({ type: "Products", id })),
@@ -27,12 +23,19 @@ export const goodsApi = createApi({
         method: "POST",
         body
       }),
-      invalidatesTags:  [{ type: "Products", id: "LIST" }]
+      invalidatesTags: [{ type: "Products", id: "LIST" }] // мы сделали ранее providesTags и теперь вставляем в методы эту строку
+    }),
+    deleteProduct: build.mutation({
+      query: (id) => ({
+        url: `goods/${id}`,
+        method: "DELETE"
+      }),
+      invalidatesTags: [{ type: "Products", id: "LIST" }] //и сюда вставляем. это чобы оновлялась страница после изменения базы данных
     })
   })
 });
 
-export const { useGetGoodsQuery, useAddProductMutation } = goodsApi;
+export const { useGetGoodsQuery, useAddProductMutation, useDeleteProductMutation } = goodsApi;
 
 //здесь создается хук useGetGoodsQuery
 /*он состоит из use + getGoods + Query,

@@ -1,5 +1,9 @@
 import "./App.css";
-import { useGetGoodsQuery, useAddProductMutation } from "./redux";
+import {
+  useGetGoodsQuery,
+  useAddProductMutation,
+  useDeleteProductMutation
+} from "./redux";
 import { useState } from "react";
 
 function App() {
@@ -9,11 +13,17 @@ function App() {
   const [addProduct, { isError }] = useAddProductMutation(); // объект с параметрами для демонстрации, тут не используем,
   //возвращает массив -- в хуке выше происходит выполнение функции, а тут в useAddProductMutation мы принимаем функцию, а выполнять будем по необходимости
 
+  const [deleteProduct] = useDeleteProductMutation(); //так же возвр массив, где есть функция, которую мы вызовем по необходимости
+
   const handleAddProduct = async () => {
     if (newProduct) {
       await addProduct({ name: newProduct }).unwrap(); //unwrap - обязательно. для корректной работы других пропов из хука
       setNewProduct("");
     }
+  };
+
+  const handleDeleteProduct = async (id) => {
+    await deleteProduct(id).unwrap();
   };
 
   if (isLoading) return <h1>Loading...</h1>;
@@ -37,7 +47,10 @@ function App() {
         </select>
       </div>
       {data.map((item) => (
-        <li key={item.id}>{item.name}</li>
+        <li key={item.id}>
+          {item.name}
+          <span onClick={() => handleDeleteProduct(item.id)}>X</span>
+        </li>
       ))}
     </div>
   );
